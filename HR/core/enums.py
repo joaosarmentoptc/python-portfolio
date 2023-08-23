@@ -41,3 +41,19 @@ class UserStates(models.TextChoices):
 
 class EmployeeType(models.TextChoices):
     INTERNAL = "INT", _("Internal")
+
+
+class Company(models.TextChoices):
+    JUMIA = "JUMIA", _("Jumia")
+
+
+class ProbationPeriod(models.TextChoices):
+    _NA = "NA", _("N/A")
+    _15D = "15D", _("15 Days")
+    _30D = "30D", _("30 Days")
+    _60D = "60D", _("60 Days")
+
+
+class NetOrGross(models.TextChoices):
+    NET = "N", _("NET")
+    GROSS = "G", _("GROSS")

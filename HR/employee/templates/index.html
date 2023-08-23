@@ -1,11 +1,153 @@
 {% extends 'base.html' %}
 
+{% load employees %}
+
 {% block content %}
 
-<h1>Name:</h1>
-<ul>
-{% for employee in employees %}
-<p>{{ employee.user.first_name }} - <a href ={{ employee.uuid }}>View</a></p>
-{% endfor %}
-</ul>
+<div class="column">
+    <div class="box">
+        <nav class="level">
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Number of Employees</p>
+                    <p class="title">{{ employees_count }}</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Active</p>
+                    <p class="title">{{ employees_active_count }}</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Marked as Leaver</p>
+                    <p class="title">{{ employees_leavers_count }}</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Pending Approvals</p>
+                    <p class="title">{{ employees_approval_count }}</p>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="box">
+
+        <nav class="level">
+            <!-- Left side -->
+            <div class="level-left">
+                <div class="level-item">
+                    <div class="field has-addons">
+                        <p class="control">
+                            <input class="input" type="text" placeholder="Find an employee">
+                        </p>
+                        <p class="control">
+                            <button class="button">
+                                Search
+                            </button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right side -->
+            <div class="level-right">
+                <p class="level-item"><strong>All</strong></p>
+                <p class="level-item"><a>Active</a></p>
+                <p class="level-item"><a>Drafts</a></p>
+                <p class="level-item"><a>Marked Leaver</a></p>
+                <p class="level-item"><a class="button is-success" href="{% url 'employee:create_employee' %}">New</a>
+                </p>
+            </div>
+        </nav>
+
+    </div>
+    <div class="box">
+        <table class="table is-fullwidth is-striped has-text-centered">
+            <thead>
+            <tr>
+                <th class="has-text-centered">Employee Number</th>
+                <th class="has-text-centered">Name</th>
+                <th class="has-text-centered">Email</th>
+                <th class="has-text-centered">Country</th>
+                <th class="has-text-centered">Status</th>
+                <th class="has-text-centered">State</th>
+                <th class="has-text-centered">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for employee in employees %}
+            <tr>
+                <td>PW{{ employee.user_id }}</td>
+                <td>{{ employee.user.first_name }} {{ employee.user.last_name }}</td>
+                <td>{{ employee.user.email }}</td>
+                <td>{{ employee.residential_country.name }}</td>
+                <td>{% if employee.user.is_active %}Active{% else %}Inactive{% endif %}</td>
+                <td>{{ employee.state }}</td>
+                <td>
+                    <a href={{ employee.uuid }}>
+                    <span class="icon"><i class="far fa-user"></i>
+                    </span>
+                    </a>
+                    <a href="#">
+                    <span class="icon"><i class="far fa-pen-to-square"></i>
+                    </span>
+                    </a>
+                    <a href="#">
+                    <span class="icon"><i class="fas fa-user-slash"></i>
+                    </span>
+                    </a>
+                </td>
+
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+
+            <a class="pagination-previous
+            {% if employees.has_previous %}" href="?page={{ employees.previous_page_number }}">
+                Previous
+               {% else %}
+               is-disabled">Previous
+            {% endif %}</a>
+
+            <a class="pagination-next
+            {% if employees.has_next %}" href="?page={{ employees.next_page_number }}">
+                Next
+               {% else %}
+               is-disabled">Next
+            {% endif %}</a>
+
+            <ul class="pagination-list">
+                {% if employees.has_previous %}
+                <li><a class="pagination-link" aria-label="Goto page 1"  href="?page=1">1</a></li>
+                {% if employees.number > 2 %}
+                <li><span class="pagination-ellipsis">&hellip;</span></li>
+                <li><a class="pagination-link" aria-label="Goto page {{ employees.number|add:-1 }}"
+                href = "?page={{ employees.number|add:-1 }}">
+                    {{ employees.number|add:-1 }}
+                </a></li>
+                {% endif %}
+                {% endif %}
+                <li><a class="pagination-link is-current" aria-current="page" href="#">{{ employees.number }}</a></li>
+                {% if employees.number|add:1 < employees.paginator.num_pages  %}
+                <li><a class="pagination-link" href="?page={{ employees.number|add:1 }}">{{ employees.number|add:1 }}</a></li>
+                <li><span class="pagination-ellipsis">&hellip;</span></li>
+                {% endif  %}
+                {% if employees.number < employees.paginator.num_pages  %}
+                <li><a class="pagination-link" aria-label="Goto page {{ employees.paginator.num_pages }}"
+                       href="?page={{ employees.paginator.num_pages }}">{{ employees.paginator.num_pages }}</a></li>
+                {% endif  %}
+
+            </ul>
+        </nav>
+
+    </div>
+</div>
+
 {% endblock content %}

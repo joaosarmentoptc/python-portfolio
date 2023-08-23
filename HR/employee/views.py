@@ -1,6 +1,7 @@
 import random
 
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
@@ -11,10 +12,24 @@ from employee.models import Employee, Supervisor
 
 # Create your views here.
 def dashboard(request):
-    employees = Employee.objects.all
+    employees = Employee.objects.all()
+    employees_count = employees.count()
+    employees_active_count = employees.filter(state='active').count()
+    employees_leavers_count = employees.filter(state__in=['future_leaver','marked_as_leaver']).count()
+    employees_approval_count = employees.filter(state__in=['draft']).count()
+
+    paginator = Paginator(employees, 2)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'employees': employees
+        'employees': page_obj,
+        'employees_count': employees_count,
+        'employees_active_count': employees_active_count,
+        'employees_leavers_count': employees_leavers_count,
+        'employees_approval_count': employees_approval_count,
     }
+
     return render(request, 'index.html', context)
 
 
@@ -42,7 +57,7 @@ def create_employee(request):
 
 def view_employee(request,uuid):
     employee = Employee.objects.get(uuid=uuid)
-    form = EmployeeForm(instance=employee, initial={'direct_manager': employee.get_supervisors_by_type('D')})
+    form = EmployeeForm(instance=employee, initial={'direct_manager': employee.get_supervisors_by_type('D')} or None)
 
     context = {
         'employee': employee,

@@ -1,15 +1,17 @@
+import uuid
 from random import random
 
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+
 from django_countries.fields import CountryField
 from django_fsm import FSMField
-import uuid
-from core.enums import PersonalTitle, MaritalStatus, SupervisorType, Gender, UserStates, EmployeeType
 from phonenumber_field.modelfields import PhoneNumberField
 
+from core.enums import PersonalTitle, MaritalStatus, SupervisorType, Gender, UserStates, EmployeeType, Company, \
+    ProbationPeriod, NetOrGross
 from core.models import Model
 
 
@@ -38,7 +40,7 @@ class Employee(Model):
     state = FSMField(choices=UserStates.choices, default='draft', protected=True, null=False)
 
     def get_supervisors_by_type(self, type):
-        return self.to_employee.filter(supervisor_type=type).first().from_employee
+        return getattr(self.to_employee.filter(supervisor_type=type).first(), 'from_employee', None)
 
     def __str__(self):
         return f"""PW{self.user_id} : {self.user.first_name} {self.user.last_name}"""
@@ -51,6 +53,49 @@ class Supervisor(Model):
 
     class Meta:
         unique_together = ['from_employee', 'to_employee']
+
+
+class ContractCategory(Model):
+    contract_category = models.CharField(max_length=10)
+
+
+class ContractType(Model):
+    contract_type = models.CharField(max_length=10)
+    contract_category = models.ForeignKey(ContractCategory, on_delete=models.DO_NOTHING)
+
+
+class LegalEntity(Model):
+    legal_entity = models.CharField(max_length=10)
+    country = CountryField(blank=False, null=False)
+
+
+class Contract(Model):
+    city = models.CharField(max_length=25, blank=False, null=False)
+    company = models.CharField(max_length=10, choices=Company.choices, default=Company.JUMIA, blank=False)
+    contract_type = models.ForeignKey(ContractType, on_delete=models.DO_NOTHING)
+    legal_entity = models.ForeignKey(LegalEntity, on_delete=models.DO_NOTHING)
+    start_date = models.DateField(blank=False, null=False)
+    end_date = models.DateField(blank=True, null=True)
+    probation_period = models.CharField(
+        max_length=10,
+        choices=ProbationPeriod.choices,
+        default=ProbationPeriod._NA,
+        blank=False,
+        null=False)
+
+
+class Salary(Model):
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
+    annual_basic_salary = models.PositiveIntegerField(blank=False, null=False)
+    currency_code = models.CharField(max_length=10, blank=False, null=False)
+    effective_date = models.DateField(blank=False, null=False)
+
+
+class Entitlements(Model):
+    salary = models.ForeignKey(Salary, on_delete=models.CASCADE)
+    amount = models.PositiveIntegerField(blank=False, null=False)
+    include_in_salary = models.BooleanField(default=False, blank=False, null=False)
+    net_or_gross = models.CharField(max_length=1, choices=NetOrGross.choices, blank=False, null=False)
 
 
 @receiver(pre_save, sender=Employee)
