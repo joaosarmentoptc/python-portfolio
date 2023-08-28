@@ -1,14 +1,262 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button class="button is-success is-fullwidth is-medium mt-5"
-            type="submit">
-        Save
-    </button>
-</form>
+
+<div class="column">
+    <div class="box">
+        <h1 class="title is-5 has-text-grey-dark">EMPLOYEE INFORMATION</h1>
+    </div>
+
+    <div class="box">
+        <div class="block">
+
+            <!--
+            {% load crispy_forms_tags %}
+
+            {% crispy user_form %}
+
+            {% crispy employee_form %}
+-->
+
+
+            <div class="section is-medium pt-2 pb-2">
+                <form method="post" id="employee-create-form">
+                    {% csrf_token %}
+
+                    <div class="field">
+                        <div class="control">
+                            <label class="label">{{ employee_form.user_type.label_tag|title }}</label>
+                            <div class="select">
+                                {{ employee_form.user_type }}
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="field is-grouped">
+                        <div class="control is-expanded">
+                            <label class="label">Name:</label>
+                            {{ user_form.first_name }}
+                        </div>
+
+                        <div class="control is-expanded">
+                            <label class="label">&nbsp;</label>
+                            {{ user_form.last_name }}
+                        </div>
+
+
+                        <div class="control is-expanded">
+                            <label class="label">&nbsp;</label>
+                            {{ user_form.email }}
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <label class="label">{{ employee_form.date_of_birth.label_tag|title }}</label>
+                            <div class="date">
+                                {{ employee_form.date_of_birth }}
+                            </div>
+                        </div>
+
+                        <div class="control">
+                            <label class="label">{{ employee_form.gender.label_tag }}</label>
+                            <div class="select">
+                                {{ employee_form.gender }}
+                            </div>
+                        </div>
+
+                        <div class="control">
+                            <label class="label">{{ employee_form.nationality.label_tag }}</label>
+                            <div class="select">
+                                {{ employee_form.nationality }}
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="field">
+                        <label class="label">{{ employee_form.marital_status.label_tag|title }}</label>
+                        <div class="control">
+                            <div class="select">
+                                {{ employee_form.marital_status }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="control">
+                            <label class="label">Contact Information:</label>
+                            {{ employee_form.residential_address }}
+                        </div>
+                    </div>
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            {{ employee_form.residential_postal_code }}
+                        </div>
+
+                        <div class="control is-expanded">
+                            {{ employee_form.residential_city }}
+                        </div>
+
+                        <div class="control">
+                            <div class="select">
+                                {{ employee_form.residential_country }}
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="columns is-variable is-2">
+
+
+                        {{ employee_form.residential_phone }}
+
+                        <div class="column">
+                            <div class="control is-expanded">
+                                {{ employee_form.personal_email }}
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="field">
+                        <label class="label">{{ employee_form.direct_manager.label_tag|title }}</label>
+                        <div class="control">
+                            <div class="select">
+                                {{ employee_form.direct_manager }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="checkbox">
+                            {{ employee_form.disability }} Mark if employee has disability
+                        </label>
+                    </div>
+
+                    <div class="field is-grouped-right">
+                        <div class="control">
+                            <button class="button is-link">Submit</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    window.addEventListener('load', function() {
+      // Wrap id_residential_phone_0
+      wrapSelectWithSelect('id_residential_phone_0');
+
+      // Wrap id_residential_phone_1
+      wrapSelectWithControl('id_residential_phone_1');
+    });
+
+    function wrapSelectWithSelect(elementId) {
+      var selectElement = document.getElementById(elementId);
+      selectElement.value=-1;
+      selectElement.placeholder="Hi";
+
+      if (selectElement) {
+        // Create a new control div element
+        var columnDiv = document.createElement('div');
+        columnDiv.className = 'column is-one-fifth';
+
+        var fieldDiv = document.createElement('div');
+        fieldDiv.className = 'field';
+
+        var controlDiv = document.createElement('div');
+        controlDiv.className = 'control is-expanded';
+
+        // Create a new select div element
+        var selectDiv = document.createElement('div');
+        selectDiv.className = 'select';
+
+        // Clone the select element and append it to the select div
+        var clonedSelect = selectElement.cloneNode(true);
+        selectDiv.appendChild(clonedSelect);
+
+        // Append the select div to the control div
+        controlDiv.appendChild(selectDiv);
+        fieldDiv.appendChild(controlDiv);
+        columnDiv.appendChild(fieldDiv);
+
+        // Replace the original select element with the control div
+        selectElement.parentNode.replaceChild(columnDiv, selectElement);
+      }
+    }
+
+    function wrapSelectWithControl(elementId) {
+      var selectElement = document.getElementById(elementId);
+      if (selectElement) {
+
+        var columnDiv = document.createElement('div');
+        columnDiv.className = 'column';
+
+        // Create a new control div element
+        var controlDiv = document.createElement('div');
+        controlDiv.className = 'control is-expanded';
+
+        // Replace the original select element with the control div
+        selectElement.parentNode.replaceChild(columnDiv, selectElement);
+
+        // Append the select element to the control div
+        controlDiv.appendChild(selectElement);
+        columnDiv.appendChild(controlDiv);
+      }
+    }
+
+</script>
+
+
+<script>
+    $(document).ready(function() {
+      var form = $('#employee-create-form');
+      var firstNameInput = form.find('#id_first_name');
+      var lastNameInput = form.find('#id_last_name');
+      var generatedEmail = form.find('#id_email');
+
+      function updateGeneratedEmail() {
+        var firstName = firstNameInput.val();
+        var lastName = lastNameInput.val();
+
+        if (firstName && lastName) {
+          var email = firstName.toLowerCase() + '.' + lastName.toLowerCase() + '@company.com';
+
+          // Check email availability
+          $.ajax({
+            url: '/admin/employees/check_email_availability',
+            method: 'GET',
+            data: { first_name: firstName, last_name: lastName },
+            success: function(data) {
+                console.log(data.email);
+                generatedEmail.val(data.email);
+            }
+          });
+        } else {
+          generatedEmail.val('');
+        }
+      }
+
+      firstNameInput.on('input', updateGeneratedEmail);
+      lastNameInput.on('input', updateGeneratedEmail);
+    });
+</script>
+
 
 {% endblock content %}

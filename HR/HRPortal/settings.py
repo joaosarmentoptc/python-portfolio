@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'phonenumber_field',
     'core',
     'employee',
+    'crispy_forms',
+    'crispy_bulma',
 ]
 
 MIDDLEWARE = [
@@ -134,3 +136,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 FIXTURES = []
 
 LOGOUT_REDIRECT_URL = 'admin'
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = ('bulma',)
+
+CRISPY_TEMPLATE_PACK = 'bulma'

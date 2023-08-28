@@ -8,28 +8,80 @@
     </div>
     <div class="columns">
         <div class="column is-one-fifth">
-            First column
+
+            {% include 'employee_menu.html' %}
+
         </div>
         <div class="column">
-            <div class="card">
+            <div class="card block">
                 <div class="card-content">
                     <div class="media">
                         <div class="media-left">
                             <figure class="image is-48x48">
-                                <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                                {% if employee.gender == 'F' %}
+                                <img class="is-rounded" src="https://havardassoc.co.uk/wp-content/uploads/2021/12/business-female-avatar-500x620.png" alt="Placeholder image">
+                                {% else %}
+                                <img class="is-rounded" src="https://connectkaro.org/wp-content/uploads/2019/03/placeholder-profile-male-500x500.png" alt="Placeholder image">
+                                {% endif %}
                             </figure>
                         </div>
                         <div class="media-content">
                             <p class="title is-4">{{ employee.user.first_name }} {{ employee.user.last_name }}</p>
-                            <p class="subtitle is-6">PW{{ employee.user.id }}</p>
+                            <p class="subtitle is-6">PW{{ employee.user.id }} | {{ employee.user.email }}
+                                {% if employee.disability %}
+                                <span class="icon"><i class="fas fa-wheelchair-move"></i></span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="media-right">
+                            <a href="#">
+                                <span class="icon is-large"><i class="far fa-pen-to-square fa-lg"></i></span>
+                            </a>
                         </div>
                     </div>
 
                     <div class="content">
-                        {{ employee }}
+                        <p><span class="icon"><i class="fas fa-baby"></i></span>
+                            {{ employee.date_of_birth|date:'d M Y' }}
+                        </p>
+                        <p>
+                            <span class="icon"><i class="{{ employee.nationality.flag_css }}"></i></span>
+                            {{ employee.nationality.name }}
+                        </p>
+                        <p>
+                            <span class="icon"><i class="fas fa-map-pin"></i></span>
+                            {{ employee.residential_address }}
+                            <br><span class="icon"></span>
+                            {{ employee.residential_postal_code }} {{ employee.residential_city }}
+                            <br><span class="icon"></span>
+                            {{ employee.residential_country.name }}
+                        </p>
+                        {% if employee.residential_phone %}
+                        <p>
+                            <span class="icon"><i class="fas fa-mobile-screen"></i></span>
+                            {{ employee.residential_phone }}
+                        </p>
+                        {% endif %}
+
+                        {% if employee.personal_email %}
+                        <p>
+                            <span class="icon"><i class="far fa-envelope"></i></span>
+                            {{ employee.personal_email }}
+                        </p>
+                        {% endif %}
+
+                        <p>
+                            <span class="icon"><i class="far fa-heart"></i></span>
+                            {{ employee.marital_status|title }}
+                        </p>
+
+
                     </div>
                 </div>
             </div>
+            {% if user.contract.count > 0 %}
+                {% include 'employee_contracts.html' %}
+            {% endif %}
         </div>
     </div>
 </div>

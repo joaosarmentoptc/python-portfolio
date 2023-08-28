@@ -88,16 +88,8 @@
                 <td>{% if employee.user.is_active %}Active{% else %}Inactive{% endif %}</td>
                 <td>{{ employee.state }}</td>
                 <td>
-                    <a href={{ employee.uuid }}>
-                    <span class="icon"><i class="far fa-user"></i>
-                    </span>
-                    </a>
-                    <a href="#">
-                    <span class="icon"><i class="far fa-pen-to-square"></i>
-                    </span>
-                    </a>
-                    <a href="#">
-                    <span class="icon"><i class="fas fa-user-slash"></i>
+                    <a href="{{ employee.uuid }}">
+                    <span class="icon"><i class="far fa-eye"></i>
                     </span>
                     </a>
                 </td>

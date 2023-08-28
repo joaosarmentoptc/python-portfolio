@@ -2,26 +2,18 @@ from django.utils.translation import gettext_lazy as _
 from django.db import models
 
 
-class PersonalTitle(models.TextChoices):
-    EMPTY = "", _("---------")
-    MISTER = "MR", _("Mister")
-    MISS = "MS", _("Miss")
-
-
 class MaritalStatus(models.TextChoices):
-    EMPTY = "", _("---------")
-    MARRIED = "MARRIED", _("Married")
     SINGLE = "SINGLE", _("Single")
+    MARRIED = "MARRIED", _("Married")
     DIVORCED = "DIVORCED", _("Divorced")
     WIDOWED = "WIDOWED", _("Widowed")
     PARTNERSHIP = "PARTNERSHIP", _("Partnership")
 
 
 class Gender(models.TextChoices):
-    EMPTY = "", _("---------")
+    OTHER = "O", _("Other")
     MALE = "M", _("Male")
     FEMALE = "F", _("Female")
-    OTHER = "O", _("Other")
 
 
 class SupervisorType(models.TextChoices):

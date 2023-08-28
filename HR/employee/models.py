@@ -10,7 +10,7 @@ from django_countries.fields import CountryField
 from django_fsm import FSMField
 from phonenumber_field.modelfields import PhoneNumberField
 
-from core.enums import PersonalTitle, MaritalStatus, SupervisorType, Gender, UserStates, EmployeeType, Company, \
+from core.enums import MaritalStatus, SupervisorType, Gender, UserStates, EmployeeType, Company, \
     ProbationPeriod, NetOrGross
 from core.models import Model
 
@@ -20,7 +20,6 @@ class Employee(Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, null=False, editable=False)
     user_type = models.CharField(max_length=3, choices=EmployeeType.choices, default=EmployeeType.INTERNAL, blank=False)
     uuid = models.UUIDField(editable=False, default=uuid.uuid4)
-    personal_title = models.CharField(max_length=2, choices=PersonalTitle.choices, default=None, blank=True, null=True)
     date_of_birth = models.DateField(blank=False, null=False)
     gender = models.CharField(max_length=1, choices=Gender.choices, default=None, blank=True, null=True)
     nationality = CountryField(blank=False, default=None)
@@ -70,6 +69,7 @@ class LegalEntity(Model):
 
 
 class Contract(Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='contract')
     city = models.CharField(max_length=25, blank=False, null=False)
     company = models.CharField(max_length=10, choices=Company.choices, default=Company.JUMIA, blank=False)
     contract_type = models.ForeignKey(ContractType, on_delete=models.DO_NOTHING)
@@ -100,6 +100,10 @@ class Entitlements(Model):
 
 @receiver(pre_save, sender=Employee)
 def create_user(sender, instance, raw, **kwargs):
-    user = User(email='test@jumia.com', first_name='hi', last_name='there', username=random(), is_active=0)
+    user = User(email=instance.email,
+                first_name=instance.first_name,
+                last_name=instance.last_name,
+                username=instance.email,
+                is_active=0)
     user.save()
     instance.user_id = user.id
